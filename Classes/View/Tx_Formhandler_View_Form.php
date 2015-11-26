@@ -119,12 +119,18 @@ class Tx_Formhandler_View_Form extends Tx_Formhandler_AbstractView {
 		//fill selected_[fieldname]_value markers and checked_[fieldname]_value markers
 		$this->fillSelectedMarkers();
 
+		
+		//fill is_success_[fieldname] markers
+		$this->fillIsSuccessMarkers($errors);
+		
+		
 		//fill error_[fieldname] markers
 		if (!empty($errors)) {
 			$this->fillIsErrorMarkers($errors);
 			$this->fillErrorMarkers($errors);
 		}
 
+	
 		//fill LLL:[language_key] markers again to make language markers in other markers possible
 		$this->fillLangMarkers();
 
@@ -974,6 +980,25 @@ class Tx_Formhandler_View_Form extends Tx_Formhandler_AbstractView {
 		$thumb = $this->cObj->IMAGE($imgConf['image.']);
 		return $thumb;
 	}
+	
+
+	/**
+	 * Substitutes markers
+	 * 		###is_success_[fieldname]###
+	 * in $this->template
+	 *
+	 * @return void
+	 */
+	protected function fillIsSuccessMarkers($errors) {
+		foreach($this->gp as $field=>$value) {
+			if(!isset($errors[$field])) {
+				$markers['###is_success_' . $field . '###'] = 'success';
+			}
+
+		}
+		$this->template = $this->cObj->substituteMarkerArray($this->template, $markers);
+	}
+	
 
 	/**
 	 * Substitutes markers
