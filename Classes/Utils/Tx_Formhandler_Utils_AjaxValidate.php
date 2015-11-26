@@ -69,7 +69,10 @@ class Tx_Formhandler_Utils_AjaxValidate {
 					);
 					$content = $view->render($gp, $errors);
 				}
-				$content = '<span class="error">' . $content . '</span>';
+				foreach($errors as $field=>$error) {
+					$content = '<span class="error">' . $this->utilityFuncs->getTranslatedMessage($this->utilityFuncs->readLanguageFiles(NULL, $this->settings), 'error_' . $field . '_' . $error[0]) . '</span>';
+				}
+
 			}
 			print $content;
 		}
