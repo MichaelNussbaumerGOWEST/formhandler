@@ -171,11 +171,20 @@ class Tx_Formhandler_AjaxHandler_Jquery extends Tx_Formhandler_AbstractAjaxHandl
 			});';
 		}
 		if(strlen($js) > 0) {
+			$intervalId = 'formhandlerWaitsForJquery' . rand();
 			$fullJS = '
 				<script type="text/javascript">
-				' . $this->jQueryAlias . '(function() {
-				' . $js . '
-				});
+				var ' . $intervalId . ' = window.setInterval(function () {
+					if(typeof(' . $this->jQueryAlias . ') != "undefined") {
+						window.clearInterval(' . $intervalId . ');
+						
+						' . $this->jQueryAlias . '(function() {
+						' . $js . '
+						});
+					}
+				}, 50);
+				
+				
 				</script>
 			';
 
@@ -327,11 +336,13 @@ class Tx_Formhandler_AjaxHandler_Jquery extends Tx_Formhandler_AbstractAjaxHandl
 			}
 		}
 		if(strlen($fieldJS) > 0) {
+			$intervalId = 'formhandlerWaitsForJquery' . rand();
+			
 			$fieldJS = '
 				<script type="text/javascript">
-				var formhandlerWaitsForJquery = window.setInterval(function () {
+				var ' . $intervalId . ' = window.setInterval(function () {
 					if(typeof(' . $this->jQueryAlias . ') != "undefined") {
-						window.clearInterval(formhandlerWaitsForJquery);
+						window.clearInterval(' . $intervalId . ');
 						
 						function attachValidationEvents() {
 							' . $fieldJS . '
@@ -362,6 +373,7 @@ class Tx_Formhandler_AjaxHandler_Jquery extends Tx_Formhandler_AbstractAjaxHandl
 			'uploadedFileName' => $uploadedFileName
 		);
 		$url = $this->utilityFuncs->getAjaxUrl($params);
+		$intervalId = 'formhandlerWaitsForJquery' . rand();
 		$js = '
 			<script type="text/javascript">
 				function attachFileRemovalEvents' . $field . '() {
@@ -373,9 +385,18 @@ class Tx_Formhandler_AjaxHandler_Jquery extends Tx_Formhandler_AbstractAjaxHandl
 						return false;
 					});
 				}
-				' . $this->jQueryAlias . '(function() {
-					attachFileRemovalEvents' . $field . '();
-				});
+				var ' . $intervalId . ' = window.setInterval(function () {
+					if(typeof(' . $this->jQueryAlias . ') != "undefined") {
+						window.clearInterval(' . $intervalId . ');
+						
+						' . $this->jQueryAlias . '(function() {
+							attachFileRemovalEvents' . $field . '();
+						});
+					}
+				}, 50);
+				
+				
+				
 			</script>
 		';
 		$this->addJS($js);
