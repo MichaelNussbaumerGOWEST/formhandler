@@ -329,12 +329,18 @@ class Tx_Formhandler_AjaxHandler_Jquery extends Tx_Formhandler_AbstractAjaxHandl
 		if(strlen($fieldJS) > 0) {
 			$fieldJS = '
 				<script type="text/javascript">
-				function attachValidationEvents() {
-					' . $fieldJS . '
-				}
-				' . $this->jQueryAlias . '(function() {
-					attachValidationEvents();
-				});
+				var formhandlerWaitsForJquery = window.setInterval(function () {
+					if(typeof(' . $this->jQueryAlias . ') != "undefined") {
+						window.clearInterval(formhandlerWaitsForJquery);
+						
+						function attachValidationEvents() {
+							' . $fieldJS . '
+						}
+						' . $this->jQueryAlias . '(function() {
+							attachValidationEvents();
+						});
+					}
+				}, 50);
 				</script>
 			';
 			$this->addJS($fieldJS);
